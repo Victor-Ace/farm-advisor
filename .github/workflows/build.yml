@@ -29,11 +29,13 @@ jobs:
           pip install --upgrade pip buildozer "cython<3"
 
       - name: Build the APK with Buildozer
+        - name: Build the APK with Buildozer
         run: |
-          sed -i 's/^andriod\..*//' buildozer.spec
+          sed -i '/^andriod/d' buildozer.spec
+          sed -i '/^android.ndk/d; /^android.archs/d' buildozer.spec
+          sed -i '/^android.minapi/a android.ndk = 25b\nandroid.ndk_api = 21\nandroid.archs = arm64-v8a' buildozer.spec
+          grep -n "android\." buildozer.spec
           buildozer -v android debug
-        env:
-          BUILDOZER_ANDROID_NDK: "25b"
 
       - name: Save the APK so it can be downloaded
         uses: actions/upload-artifact@v4
